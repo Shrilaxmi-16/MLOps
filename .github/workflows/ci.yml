@@ -22,9 +22,9 @@ jobs:
     - name: Build and push Streamlit image
       run: |
         docker build --no-cache -t basudevp/msrit-bank-risk-cat-streamlit:latest -f docker.streamlit .
-        docker push ***/msrit-bank-risk-cat-streamlit:latest
+        docker push basudevp/msrit-bank-risk-cat-streamlit:latest
 
     - name: Build and push FastAPI image
       run: |
         docker build --no-cache -t basudevp/msrit-bank-risk-cat-fastapi:latest -f docker.fastapi .
-        docker push ***/msrit-bank-risk-cat-fastapi:latest
+        docker push basudevp/msrit-bank-risk-cat-fastapi:latest
