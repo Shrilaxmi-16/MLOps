@@ -85,7 +85,7 @@ elif page == "Batch Profiling":
         logging.info(f"Batch file uploaded with {len(df)} records")
 
         try:
-            response = requests.post("http://127.0.0.1:8001/batch_predict", json={"data": df.to_dict(orient="list")})
+            response = requests.post("http://fastapi:8001/batch_predict", json={"data": df.to_dict(orient="list")})
 
             response.raise_for_status()  # This will raise an HTTPError for bad responses
 
