@@ -1,0 +1,13 @@
+2024-08-19 21:05:23 - ERROR - Artifact file not found: artifacts\data_processing_pipeline.pkl
+2024-08-19 21:27:43 - INFO - Received batch request with 26 records.
+2024-08-19 21:27:43 - INFO - Batch data transformed successfully
+2024-08-19 21:27:43 - INFO - Batch predictions completed
+2024-08-19 21:27:43 - INFO - Batch predictions saved to Data\output\batch_predictions.csv
+2024-08-19 21:30:47 - INFO - Received batch request with 26 records.
+2024-08-19 21:30:47 - INFO - Batch data transformed successfully
+2024-08-19 21:30:47 - INFO - Batch predictions completed
+2024-08-19 21:30:47 - INFO - Batch predictions saved to Data\output\batch_predictions.csv
+2024-08-19 22:30:52 - INFO - Received batch request with 26 records.
+2024-08-19 22:30:52 - INFO - Batch data transformed successfully
+2024-08-19 22:30:52 - INFO - Batch predictions completed
+2024-08-19 22:30:52 - INFO - Batch predictions saved to Data\output\batch_predictions.csv

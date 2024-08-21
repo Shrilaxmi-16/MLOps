@@ -1,14 +1,20 @@
+import os
+import logging
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import pandas as pd
 import pickle
-import logging
-import os
-# tis is a test line
+
+# Navigate to the main project directory
+main_project_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+
+# Ensure the logs directory exists in the main project directory
+log_dir = os.path.join(main_project_dir, 'logs')
+os.makedirs(log_dir, exist_ok=True)
 
 # Configure logging
 logging.basicConfig(
-    filename=os.path.join('logs', 'logfile_API.txt'),  # Adjusted path
+    filename=os.path.join(log_dir, 'logfile_API.txt'),
     level=logging.DEBUG,
     format='%(asctime)s - %(levelname)s - %(message)s',
     datefmt='%Y-%m-%d %H:%M:%S'
@@ -23,8 +29,8 @@ def load_artifact(filename):
         logging.error(f"Artifact file not found: {filename}")
         raise
 
-# Use environment variables or default paths
-artifacts_path = os.getenv('ARTIFACTS_PATH', 'artifacts')
+# Adjust the artifacts path to the main project directory
+artifacts_path = os.path.join(main_project_dir, 'artifacts')
 data_processing_pipeline = load_artifact(os.path.join(artifacts_path, 'data_processing_pipeline.pkl'))
 best_classifier = load_artifact(os.path.join(artifacts_path, 'best_classifier.pkl'))
 label_encoder = load_artifact(os.path.join(artifacts_path, 'label_encoder.pkl'))
@@ -49,6 +55,14 @@ async def batch_predict(request: BatchRequest):
             logging.error("Received empty DataFrame.")
             raise HTTPException(status_code=400, detail="Received empty DataFrame.")
         
+        # Preserve the CustomerID
+        if 'CustomerID' not in df.columns:
+            logging.error("CustomerID column is missing.")
+            raise HTTPException(status_code=400, detail="CustomerID column is missing.")
+        
+        customer_ids = df['CustomerID']  # Extract CustomerID for later use
+        df = df.drop(columns=['CustomerID'])  # Drop CustomerID before processing
+        
         # Transform the input data
         transformed_input = data_processing_pipeline.transform(df)
         logging.info(f"Batch data transformed successfully")
@@ -62,11 +76,16 @@ async def batch_predict(request: BatchRequest):
             logging.error("Predictions are empty.")
             raise HTTPException(status_code=500, detail="Predictions are empty.")
         
-        # Save predictions to CSV
-        output_folder = os.path.join('Data', 'output')
+        # Combine CustomerID with predictions
+        result_df = pd.DataFrame({
+            'CustomerID': customer_ids,
+            'Predicted Risk Category': decoded_predictions
+        })
+        
+        # Save predictions to CSV in the main project directory
+        output_folder = os.path.join(main_project_dir, 'Data', 'output')
         os.makedirs(output_folder, exist_ok=True)
         output_path = os.path.join(output_folder, 'batch_predictions.csv')
-        result_df = pd.DataFrame(decoded_predictions, columns=['Predicted Risk Category'])
         result_df.to_csv(output_path, index=False)
         logging.info(f"Batch predictions saved to {output_path}")
         

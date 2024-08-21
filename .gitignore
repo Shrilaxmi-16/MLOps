@@ -1,5 +1,12 @@
 # Exclude virtual environments
 .venv/
+mlops-venv/
 
 # Exclude data directories
 data/
+
+# Exclude report directories
+report/
+
+# Exclude command.txt file
+command.txt

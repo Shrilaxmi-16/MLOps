@@ -27,15 +27,23 @@ def load_artifact(filename):
 st.sidebar.title("Navigation")
 page = st.sidebar.radio("Go to", ["Home", "Adhoc Risk Profiling", "Batch Profiling"])
 
+# Determine the directory of the current script
+script_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Construct the path to the images folder
+images_dir = os.path.join(script_dir, '..', 'images')
+
 # Layout: Image on the left, title on the right
 col1, col2 = st.columns([1, 3])
 with col1:
-    image = Image.open('risk-image2.jfif')  # Adjusted path
+    image_path = os.path.join(images_dir, 'risk-image2.jfif')
+    image = Image.open(image_path)  # Adjusted path
     st.image(image, use_column_width=True)
 
 with col2:
     st.title("Loan Risk Categorization")
-    image = Image.open('risk-image.png')  # Adjusted path
+    image_path = os.path.join(images_dir, 'risk-image.png')
+    image = Image.open(image_path)  # Adjusted path
 
 # Navigation logic
 if page == "Home":
@@ -53,9 +61,9 @@ elif page == "Adhoc Risk Profiling":
     previous_default = st.selectbox("Previous Default", ['Yes', 'No'])
 
     if st.button('Predict Risk Category'):
-        pipeline = load_artifact('artifacts/data_processing_pipeline.pkl')  # Adjusted path
-        model = load_artifact('artifacts/best_classifier.pkl')  # Adjusted path
-        label_encoder = load_artifact('artifacts/label_encoder.pkl')  # Adjusted path
+        pipeline = load_artifact(os.path.join(script_dir, '..', 'artifacts', 'data_processing_pipeline.pkl'))  # Adjusted path
+        model = load_artifact(os.path.join(script_dir, '..', 'artifacts', 'best_classifier.pkl'))  # Adjusted path
+        label_encoder = load_artifact(os.path.join(script_dir, '..', 'artifacts', 'label_encoder.pkl'))  # Adjusted path
 
         input_df = pd.DataFrame([[age, income, employment_type, residence_type, credit_score, loan_amount, loan_term, previous_default]],
                                 columns=['Age', 'Income', 'EmploymentType', 'ResidenceType', 'CreditScore', 'LoanAmount', 'LoanTerm', 'PreviousDefault'])
@@ -76,17 +84,22 @@ elif page == "Batch Profiling":
         df = pd.read_csv(uploaded_file)
         logging.info(f"Batch file uploaded with {len(df)} records")
 
-        response = requests.post("http://127.0.0.1:8000/batch_predict", json={"data": df.to_dict(orient="list")})
+        try:
+            response = requests.post("http://127.0.0.1:8001/batch_predict", json={"data": df.to_dict(orient="list")})
 
-        if response.status_code == 200:
+            response.raise_for_status()  # This will raise an HTTPError for bad responses
+
             predictions = response.json()
             output_df = pd.DataFrame(predictions)
-            output_folder = 'Data/output'
+            output_folder = os.path.join(script_dir, '..', 'Data', 'output')
             os.makedirs(output_folder, exist_ok=True)
             output_file_path = os.path.join(output_folder, 'batch_predictions.csv')
             output_df.to_csv(output_file_path, index=False)
             st.success(f"Batch predictions saved to {output_file_path}")
             logging.info(f"Batch predictions saved to {output_file_path}")
-        else:
-            st.error("Error during batch prediction.")
-            logging.error(f"Batch prediction failed with status code {response.status_code}")
+        except requests.exceptions.HTTPError as http_err:
+            st.error("HTTP error occurred during batch prediction: {0}".format(http_err))
+            logging.error(f"Batch prediction failed due to HTTP error: {http_err}")
+        except requests.exceptions.RequestException as req_err:
+            st.error("Error during batch prediction. Please check the API service.")
+            logging.error(f"Batch prediction failed: {req_err}")
