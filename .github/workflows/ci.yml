@@ -1,4 +1,4 @@
-name: CI Workflow
+name: CI/CD Pipeline
 
 on:
   push:
@@ -11,27 +11,20 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v2
 
     - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
+      uses: docker/setup-buildx-action@v1
 
-    - name: Cache Docker layers
-      uses: actions/cache@v3
-      with:
-        path: /tmp/.buildx-cache
-        key: ${{ runner.os }}-buildx-${{ github.sha }}
-        restore-keys: |
-          ${{ runner.os }}-buildx-
+    - name: Log in to DockerHub
+      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
-    - name: Build Docker image
-      run: docker build --no-cache -t basudevp/msrit-bank-risk-cat:latest .
+    - name: Build and push Streamlit image
+      run: |
+        docker build --no-cache -t ***/msrit-bank-risk-cat-streamlit:latest -f docker.streamlit .
+        docker push ***/msrit-bank-risk-cat-streamlit:latest
 
-    - name: Log in to Docker Hub
-      uses: docker/login-action@v2
-      with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
-
-    - name: Push Docker image
-      run: docker push basudevp/msrit-bank-risk-cat
+    - name: Build and push FastAPI image
+      run: |
+        docker build --no-cache -t ***/msrit-bank-risk-cat-fastapi:latest -f docker.fastapi .
+        docker push ***/msrit-bank-risk-cat-fastapi:latest
