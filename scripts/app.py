@@ -104,3 +104,5 @@ elif page == "Batch Profiling":
         except requests.exceptions.RequestException as req_err:
             st.error("Error during batch prediction. Please check the API service.")
             logging.error(f"Batch prediction failed: {req_err}")
+
+# This is end
