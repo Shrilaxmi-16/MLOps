@@ -25,15 +25,13 @@ jobs:
       run: |
         docker buildx build --cache-from=type=local,src=/tmp/.buildx-cache \
                             --cache-to=type=local,dest=/tmp/.buildx-cache-new \
-                            --no-cache -t basudevp/msrit-bank-risk-cat-streamlit:latest -f Dockerfile.streamlit .
-        docker push basudevp/msrit-bank-risk-cat-streamlit:latest
+                            --push -t basudevp/msrit-bank-risk-cat-streamlit:latest -f Dockerfile.streamlit .
 
     - name: Build and push FastAPI image
       run: |
         docker buildx build --cache-from=type=local,src=/tmp/.buildx-cache \
                             --cache-to=type=local,dest=/tmp/.buildx-cache-new \
-                            --no-cache -t basudevp/msrit-bank-risk-cat-fastapi:latest -f Dockerfile.fastapi .
-        docker push basudevp/msrit-bank-risk-cat-fastapi:latest
+                            --push -t basudevp/msrit-bank-risk-cat-fastapi:latest -f Dockerfile.fastapi .
 
     - name: Clean up Docker cache
       run: |
