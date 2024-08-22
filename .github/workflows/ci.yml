@@ -15,16 +15,27 @@ jobs:
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v1
+      with:
+        install: true
 
     - name: Log in to DockerHub
       run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
     - name: Build and push Streamlit image
       run: |
-        docker build --no-cache -t basudevp/msrit-bank-risk-cat-streamlit:latest -f Dockerfile.streamlit .
+        docker buildx build --cache-from=type=local,src=/tmp/.buildx-cache \
+                            --cache-to=type=local,dest=/tmp/.buildx-cache-new \
+                            --no-cache -t basudevp/msrit-bank-risk-cat-streamlit:latest -f Dockerfile.streamlit .
         docker push basudevp/msrit-bank-risk-cat-streamlit:latest
 
     - name: Build and push FastAPI image
       run: |
-        docker build --no-cache -t basudevp/msrit-bank-risk-cat-fastapi:latest -f Dockerfile.fastapi .
+        docker buildx build --cache-from=type=local,src=/tmp/.buildx-cache \
+                            --cache-to=type=local,dest=/tmp/.buildx-cache-new \
+                            --no-cache -t basudevp/msrit-bank-risk-cat-fastapi:latest -f Dockerfile.fastapi .
         docker push basudevp/msrit-bank-risk-cat-fastapi:latest
+
+    - name: Clean up Docker cache
+      run: |
+        rm -rf /tmp/.buildx-cache
+        mv /tmp/.buildx-cache-new /tmp/.buildx-cache

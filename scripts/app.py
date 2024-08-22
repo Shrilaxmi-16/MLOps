@@ -87,7 +87,8 @@ elif page == "Batch Profiling":
         try:
             # Use the FastAPI service name defined in Docker Compose
             # Update this line
-            response = requests.post("http://localhost:8001/batch_predict", json={"data": df.to_dict(orient="list")})
+            response = requests.post("http://fastapi-container:8001/batch_predict", json={"data": df.to_dict(orient="list")})
+            
             response.raise_for_status()
             predictions = response.json()
             output_df = pd.DataFrame(predictions)
@@ -104,4 +105,4 @@ elif page == "Batch Profiling":
             st.error("Error during batch prediction. Please check the API service.")
             logging.error(f"Batch prediction failed: {req_err}")
 
-# This is end
+
