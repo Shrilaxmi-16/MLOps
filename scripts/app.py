@@ -37,13 +37,13 @@ images_dir = os.path.join(script_dir, '..', 'images')
 col1, col2 = st.columns([1, 3])
 with col1:
     image_path = os.path.join(images_dir, 'risk-image2.jfif')
-    image = Image.open(image_path)  # Adjusted path
+    image = Image.open(image_path)
     st.image(image, use_column_width=True)
 
 with col2:
     st.title("Loan Risk Categorization")
     image_path = os.path.join(images_dir, 'risk-image.png')
-    image = Image.open(image_path)  # Adjusted path
+    image = Image.open(image_path)
 
 # Navigation logic
 if page == "Home":
@@ -61,9 +61,9 @@ elif page == "Adhoc Risk Profiling":
     previous_default = st.selectbox("Previous Default", ['Yes', 'No'])
 
     if st.button('Predict Risk Category'):
-        pipeline = load_artifact(os.path.join(script_dir, '..', 'artifacts', 'data_processing_pipeline.pkl'))  # Adjusted path
-        model = load_artifact(os.path.join(script_dir, '..', 'artifacts', 'best_classifier.pkl'))  # Adjusted path
-        label_encoder = load_artifact(os.path.join(script_dir, '..', 'artifacts', 'label_encoder.pkl'))  # Adjusted path
+        pipeline = load_artifact(os.path.join(script_dir, '..', 'artifacts', 'data_processing_pipeline.pkl'))
+        model = load_artifact(os.path.join(script_dir, '..', 'artifacts', 'best_classifier.pkl'))
+        label_encoder = load_artifact(os.path.join(script_dir, '..', 'artifacts', 'label_encoder.pkl'))
 
         input_df = pd.DataFrame([[age, income, employment_type, residence_type, credit_score, loan_amount, loan_term, previous_default]],
                                 columns=['Age', 'Income', 'EmploymentType', 'ResidenceType', 'CreditScore', 'LoanAmount', 'LoanTerm', 'PreviousDefault'])
@@ -85,9 +85,10 @@ elif page == "Batch Profiling":
         logging.info(f"Batch file uploaded with {len(df)} records")
 
         try:
+            # Use the FastAPI service name defined in Docker Compose
             response = requests.post("http://fastapi:8001/batch_predict", json={"data": df.to_dict(orient="list")})
 
-            response.raise_for_status()  # This will raise an HTTPError for bad responses
+            response.raise_for_status()
 
             predictions = response.json()
             output_df = pd.DataFrame(predictions)
@@ -98,7 +99,7 @@ elif page == "Batch Profiling":
             st.success(f"Batch predictions saved to {output_file_path}")
             logging.info(f"Batch predictions saved to {output_file_path}")
         except requests.exceptions.HTTPError as http_err:
-            st.error("HTTP error occurred during batch prediction: {0}".format(http_err))
+            st.error(f"HTTP error occurred during batch prediction: {http_err}")
             logging.error(f"Batch prediction failed due to HTTP error: {http_err}")
         except requests.exceptions.RequestException as req_err:
             st.error("Error during batch prediction. Please check the API service.")
