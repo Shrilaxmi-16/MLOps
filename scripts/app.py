@@ -86,10 +86,9 @@ elif page == "Batch Profiling":
 
         try:
             # Use the FastAPI service name defined in Docker Compose
-            response = requests.post("http://fastapi:8001/batch_predict", json={"data": df.to_dict(orient="list")})
-
+            # Update this line
+            response = requests.post("http://localhost:8001/batch_predict", json={"data": df.to_dict(orient="list")})
             response.raise_for_status()
-
             predictions = response.json()
             output_df = pd.DataFrame(predictions)
             output_folder = os.path.join(script_dir, '..', 'Data', 'output')

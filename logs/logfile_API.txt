@@ -21,3 +21,7 @@
 2024-08-21 20:21:19 - INFO - Batch data transformed successfully
 2024-08-21 20:21:19 - INFO - Batch predictions completed
 2024-08-21 20:21:19 - INFO - Batch predictions saved to C:\Users\Admin\Desktop\Basudev\DSC\MLOPs\9thaug\msrit-mlops\Data\output\batch_predictions.csv
+2024-08-21 19:02:33 - INFO - Received batch request with 26 records.
+2024-08-21 19:02:33 - INFO - Batch data transformed successfully
+2024-08-21 19:02:33 - INFO - Batch predictions completed
+2024-08-21 19:02:33 - INFO - Batch predictions saved to /app/Data/output/batch_predictions.csv
