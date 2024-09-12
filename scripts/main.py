@@ -3,18 +3,17 @@ from data_preprocessing import create_data_pipeline, save_pipeline, load_pipelin
 from ml_functions import training_pipeline, prediction_pipeline, evaluation_matrices
 from helper_functions import logging
 
-
 def main():
-    # Configure logging (optional, adjust log level and output destination as needed)
+    # Configure logging (optional)
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-    # Load data/Banking_Credit_Risk_Data.csv
-    df = pd.read_csv('C:/Users/Admin/Desktop/Basudev/DSC/MLOPs/08-08/data/Banking_Credit_Risk_Data.csv')
+    # Load the dataset (using your uploaded CSV)
+    df = pd.read_csv('"C:\Users\Admin\OneDrive\Desktop\data.csv')
     logging.info('Data loaded successfully.')
 
-    # Feature engineering (replace with your feature engineering steps)
-    X = df.drop(['CustomerID', 'RiskCategory'], axis=1)
-    y = df['RiskCategory']
+    # Feature engineering: separate features (X) and target (y)
+    X = df.drop(['Class'], axis=1)  # 'Class' is the target variable
+    y = df['Class']  # Target column is 'Class'
 
     # Encode response variable (assuming encode_response_variable is defined)
     y_encoded = encode_response_variable(y)
@@ -25,7 +24,7 @@ def main():
     logging.info('Data processing pipeline created and fitted.')
 
     # Save the pipeline for later use (assuming save_pipeline is defined)
-    save_pipeline(pipeline, 'C:\Users\Admin\OneDrive\Desktop\data.csv')
+    save_pipeline(pipeline, '/mnt/data/data_pipeline.pkl')
     logging.info('Data processing pipeline saved.')
 
     # Transform the data using the fit_transform method
@@ -38,13 +37,15 @@ def main():
     best_model = training_pipeline(X_train, y_train)
 
     # Make predictions (replace with prediction_pipeline)
-    predictions = prediction_pipeline(X_val)
+    predictions = prediction_pipeline(best_model, X_val)
 
     # Evaluate the model (replace with evaluation_matrices)
-    conf_matrix, acc_score, class_report = evaluation_matrices(X_val, y_val)
+    conf_matrix, acc_score, class_report = evaluation_matrices(y_val, predictions)
 
     logging.info('Model training, prediction, and evaluation completed.')
-
+    logging.info(f'Confusion Matrix:\n{conf_matrix}')
+    logging.info(f'Accuracy Score: {acc_score}')
+    logging.info(f'Classification Report:\n{class_report}')
 
 if __name__ == "__main__":
     main()
