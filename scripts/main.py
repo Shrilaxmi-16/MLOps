@@ -24,7 +24,7 @@ def main():
     logging.info('Data processing pipeline created and fitted.')
 
     # Save the pipeline for later use (assuming save_pipeline is defined)
-    save_pipeline(pipeline, '/mnt/data/data_pipeline.pkl')
+    save_pipeline(pipeline, 'D:/shrilaxmi/data/data_pipeline.pkl')
     logging.info('Data processing pipeline saved.')
 
     # Transform the data using the fit_transform method
