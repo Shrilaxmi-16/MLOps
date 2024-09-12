@@ -25,7 +25,7 @@ def main():
     logging.info('Data processing pipeline created and fitted.')
 
     # Save the pipeline for later use (assuming save_pipeline is defined)
-    save_pipeline(pipeline, 'C:/Users/Admin/Desktop/Basudev/DSC/MLOPs/08-08/artifacts/data_processing_pipeline.pkl')
+    save_pipeline(pipeline, 'C:\Users\Admin\OneDrive\Desktop\data.csv')
     logging.info('Data processing pipeline saved.')
 
     # Transform the data using the fit_transform method
